@@ -1,0 +1,23 @@
+package Test
+import TexttagBars
+import ClosureForGroups
+import TimerUtils
+
+TexttagBar bar
+let periodic = getTimer()..startPeriodic( ANIMATION_PERIOD, function alpha)
+let countDown = getTimer()..start(10, function dest)
+
+function alpha()
+    bar.setAlpha(((((countDown.getElapsed() % 2 - 1).abs() * 360).fromDeg().cos() / 2 + 0.5) * 255).toInt())
+
+function dest()
+    periodic.release()
+    countDown.release()
+
+init
+    forUnitsAll() u -> 
+        u.remove()
+    bar = new TexttagBar(10, "o", color(255, 255, 0), color(0, 255, 255), 255)
+    ..lock(CreateUnit(playerFromIndex(0), 'hmpr', 0, 0, 0), vec3(-100, -100, 100))
+    ..setValueLeft(5, 20)
+    ..fadeOut(10, vec2(0.01, 0.01))

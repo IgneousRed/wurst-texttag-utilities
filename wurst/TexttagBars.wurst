@@ -1,0 +1,172 @@
+package TexttagBars
+import TimerUtils
+import ErrorHandling
+
+constant LIFESPAN_MAX = REAL_MAX / 2
+constant LIFESPAN_DIVIDED = LIFESPAN_MAX / 255
+
+var upperBound = -1
+texttag array textTagArray
+unit array unitArray
+vec3 array vec3Array
+TexttagBar array barArray
+
+function fadeOutCallback()
+    destroy GetExpiredTimer().getData() castTo TexttagBar
+    GetExpiredTimer().release()
+
+function lockCallback()
+    for i = 0 to upperBound
+        textTagArray[i].setPos(unitArray[i].getPos3Real() + vec3Array[i])
+
+public class TexttagBar
+    private string colorString
+    private real fadeTime = -1
+    private real fadeTime255
+    private int alpha
+    private int lockIndex = -1
+    private let textTag = CreateTextTag()
+    private int length
+    private int characterSize
+    private string colorless
+
+    construct(int length, string character, color left, color right, int alpha)
+        if textTag == null
+            error("TexttagBars: TextTag limit reached!")
+        else
+            setCharacterAndLength(character, length)
+            textTag..setPermanent(false)
+            setColorLeft(left)
+            setColorRight(right)
+            setAlpha(alpha)
+
+    ondestroy
+        if isLocked()
+            arrayRemove()
+        textTag.destr()
+
+    /** Moves the divider characterCount characters from the left side */
+    function setValueLeft(int characterCount, real textSize)
+        textTag.setText(colorless.substring( 0, characterCount * characterSize)
+         + colorString + colorless.substring( 0, (length - characterCount) * characterSize), textSize)
+
+    /** Moves the divider characterCount characters from the right side */
+    function setValueRight(int characterCount, real textSize)
+        textTag.setText(colorless.substring( 0, (length - characterCount) * characterSize)
+         + colorString + colorless.substring( 0, characterCount * characterSize), textSize)
+
+    /** Sets left side color */
+    function setColorLeft(color col)
+        textTag.setColor(col.withAlpha(255))
+
+    /** Sets right side color */
+    function setColorRight(color col)
+        colorString = col.toColorString()
+
+    /** Sets texttag alpha */
+    function setAlpha(int alpha)
+        if fadeTime == -1
+            if alpha > 1
+                this.alpha = alpha
+                let num = alpha * LIFESPAN_DIVIDED
+                textTag..setLifespan(num)
+                    ..setFadepoint(num - LIFESPAN_MAX)
+            else
+                this.alpha = 1
+                textTag..setLifespan(LIFESPAN_DIVIDED)
+                    ..setFadepoint(LIFESPAN_DIVIDED - LIFESPAN_MAX)
+        else
+            textTag.setFadepoint(fadeTime - fadeTime255 / alpha)
+
+    /** Fadeout text over time with velocity. Only call once! */
+    function fadeOut(real time, vec2 velocity)
+        fadeOut(time)
+        textTag.setVelocity(velocity.x, velocity.y)
+
+    /** Fadeout text over time. Only call once! */
+    function fadeOut(real time)
+        getTimer()..setData(this castTo int)
+            ..start(time, function fadeOutCallback)
+        fadeTime = time
+        fadeTime255 = time * 255
+        textTag..setAge(0)
+            ..setLifespan(time)
+            ..setFadepoint(time - fadeTime255 / alpha)
+
+    /** Sets visibility based on playerGroup */
+    function setVisibility(force playerGroup)
+        textTag.setVisibility(playerGroup.containsPlayer(localPlayer))
+
+    /** Locks text to unit with offset */
+    function lock(unit u, vec3 offset)
+        if not isLocked()
+            upperBound++
+            lockIndex = upperBound
+            textTagArray[lockIndex] = textTag
+            unitArray[lockIndex] = u
+            vec3Array[lockIndex] = offset
+            barArray[lockIndex] = this
+
+    /** Unlocks text from the unit */
+    function unlock()
+        if isLocked()
+            arrayRemove()
+            lockIndex = -1
+
+    /** returns true if text is locked to a unit */
+    function isLocked() returns bool
+        return lockIndex > -1
+
+    /** Sets text position */
+    function setPos(vec3 position)
+        textTag.setPos(position)
+
+    /** Gets the character */
+    function getCharacter() returns string
+        return colorless.substring(0, characterSize)
+
+    /** Gets length */
+    function getLength() returns int
+        return length
+
+    /** Sets the character and the length */
+    function setCharacterAndLength(string character, int length)
+        this.length = length
+        setCharacter(character)
+
+    /** Sets the character */
+    function setCharacter(string character)
+        if character == "|"
+            characterSize = 2
+            colorless = "||"
+            for i = 2 to length
+                colorless = colorless + "||"
+        else
+            characterSize = 1
+            colorless = character
+            for i = 2 to length
+                colorless = colorless + character
+
+    /** Sets the character length */
+    function setLength(int length)
+        this.length = length
+        if characterSize == 2
+            colorless = "||"
+            for i = 2 to length
+                colorless = colorless + "||"
+        else
+            let character = colorless.substring(0, 1)
+            colorless = character
+            for i = 2 to length
+                colorless = colorless + character
+
+    private function arrayRemove()
+        textTagArray[lockIndex] = textTagArray[upperBound]
+        unitArray[lockIndex] = unitArray[upperBound]
+        vec3Array[lockIndex] = vec3Array[upperBound]
+        barArray[lockIndex] = barArray[upperBound]
+        barArray[lockIndex].lockIndex = lockIndex
+        upperBound--
+
+init
+    CreateTimer()..startPeriodic( ANIMATION_PERIOD, function lockCallback)
