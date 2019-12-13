@@ -1,6 +1,12 @@
 package TexttagBars
-import TimerUtils
+import NoWurst
+import Unit
 import ErrorHandling
+import Force
+import Player
+import Texttag
+import TimerUtils
+import Basics
 
 constant LIFESPAN_MAX = REAL_MAX / 2
 constant LIFESPAN_DIVIDED = LIFESPAN_MAX / 255
@@ -19,18 +25,25 @@ function lockCallback()
     for i = 0 to upperBound
         textTagArray[i].setPos(unitArray[i].getPos3Real() + vec3Array[i])
 
+/** TexttagBar is an easy and performant bar class, with functions for unit locking, fadeout and alpha
+    let bar = new TexttagBar(10, "o", color(255, 255, 0), color(0, 255, 255), 127)
+        ..lock(u, vec3(0, 0, 100))
+        ..setCountLeft(4, 20)
+        // Make sure not to call fadeOut more than once, as the class gets destroyed when time runs out
+        ..fadeOut(5, vec2(0.01, 0))
+*/
 public class TexttagBar
     private string colorString
     private real fadeTime = -1
     private real fadeTime255
     private int alpha
-    private int lockIndex = -1
     private let textTag = CreateTextTag()
     private int length
     private int characterSize
     private string colorless
+    private int lockIndex = -1
 
-    construct(int length, string character, color left, color right, int alpha)
+    construct(string character, int length, color left, color right, int alpha)
         if textTag == null
             error("TexttagBars: TextTag limit reached!")
         else
@@ -55,13 +68,13 @@ public class TexttagBar
         textTag.setText(colorless.substring( 0, (length - characterCount) * characterSize)
          + colorString + colorless.substring( 0, characterCount * characterSize), textSize)
 
-    /** Sets value from the left side */
+    /** Sets value(0-1) from the left side */
     function setValueLeft(real value, real textSize)
         let characterCount = (value * length).round()
         textTag.setText(colorless.substring( 0, characterCount * characterSize)
          + colorString + colorless.substring( 0, (length - characterCount) * characterSize), textSize)
 
-    /** Sets value from the right side */
+    /** Sets value(0-1) from the right side */
     function setValueRight(real value, real textSize)
         let characterCount = (value * length).round()
         textTag.setText(colorless.substring( 0, (length - characterCount) * characterSize)
@@ -181,4 +194,4 @@ public class TexttagBar
         upperBound--
 
 init
-    CreateTimer()..startPeriodic( ANIMATION_PERIOD, function lockCallback)
+    CreateTimer()..startPeriodic(ANIMATION_PERIOD, function lockCallback)
