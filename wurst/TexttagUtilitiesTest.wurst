@@ -47,20 +47,20 @@ init
 
 	//GradientBar
 	let char = "|"
-	let max = 10
+	let len = 10
 	let red = colorHSV(0, 1, 1)
 	let aqua = colorHSV(0.5, 1, 1)
 	let gray = color(127, 127, 127)
 	let value = 5
-	new TexttagGradientBar(char, max, red, aqua, false, gray, 255)
+	new TexttagGradientBar(char, len, red, aqua, false, gray, 255)
 		..setCount(value, 20)
 		..setPos(vec3(0, 0, 100))
-	new TexttagGradientBar(char, max, red, aqua, true, gray, 255)
+	new TexttagGradientBar(char, len, red, aqua, true, gray, 255)
 		..setCount(value, 20)
 		..setPos(vec3(0, -100, 100))
-	new TexttagGradientBar(char, max, aqua, red, false, gray, 255)
+	new TexttagGradientBar(char, len, aqua, red, false, gray, 255)
 		..setCount(value, 20)
 		..setPos(vec3(0, -200, 100))
-	new TexttagGradientBar(char, max, aqua, red, true, gray, 255)
+	new TexttagGradientBar(char, len, aqua, red, true, gray, 255)
 		..setCount(value, 20)
 		..setPos(vec3(0, -300, 100))
