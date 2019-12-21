@@ -14,11 +14,11 @@ public class TexttagGradient extends TexttagCore
 	private string finishColorString
 	private bool reverseDirection
 
-	construct(colorHSV start, colorHSV finish, bool colorWheelDirection, int alpha)
+	construct(colorHSV start, colorHSV finish, bool reverseDirection, int alpha)
 		super(alpha)
 		setColorStart(start)
 		setColorFinish(finish)
-		setReverseDirection(colorWheelDirection)
+		setReverseDirection(reverseDirection)
 
 	/** Sets text */
 	function setGradientText(string text, real size)		//If overrinding "setText" it does not initialize in "TexttagUnilitiesText"
