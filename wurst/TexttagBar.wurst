@@ -1,0 +1,98 @@
+package TexttagBar
+import NoWurst
+import TexttagCore
+import String
+
+/** TexttagBar is an easy and performant bar class extending **TexttagCore**
+	new TexttagBar(char, len, yellow, aqua, alpha)
+		..setValueLeft(val, size)
+		..setPos(pos)
+*/
+public class TexttagBar extends TexttagCore
+	private string rightString
+	private int length
+	private int lengthSize
+	private int characterSize
+	private string colorless
+
+	construct(string character, int length, color left, color right, int alpha)
+		super(alpha)
+		setColorLeft(left)
+		rightString = right.toColorString()
+		setCharacterAndLength(character, length)
+
+	/** Sets **value**(0-1) from the left side */
+	function setValueLeft(real value, real size)
+		setCountLeft((value * length).round(), size)
+
+	/** Sets **value**(0-1) from the right side */
+	function setValueRight(real value, real size)
+		setCountRight((value * length).round(), size)
+
+	/** Activates **count** characters from the left side */
+	function setCountLeft(int count, real size)
+		let countSize = count * characterSize
+		setCount(countSize, lengthSize - countSize, size)
+
+	/** Activates **count** characters from the right side */
+	function setCountRight(int count, real size)
+		let countSize = count * characterSize
+		setCount(lengthSize - countSize, countSize, size)
+
+	/** Sets left side color */
+	function setColorLeft(color col)
+		setColor(col)
+
+	/** Sets right side color */
+	function setColorRight(color col)
+		let rest = rightString.substring(10, rightString.length())
+		rightString = col.toColorString() + rest
+
+	/** Gets the character */
+	function getCharacter() returns string
+		return colorless.substring(0, characterSize)
+
+	/** Gets length */
+	function getLength() returns int
+		return length
+
+	/** Sets the character and the length */
+	function setCharacterAndLength(string character, int length)
+		this.length = length
+		setCharacter(character)
+
+	/** Sets the character */
+	function setCharacter(string character)
+		if character == "|"
+			lengthSize = length + length
+			characterSize = 2
+			colorless = "||"
+			for i = 2 to length
+				colorless = colorless + "||"
+		else
+			lengthSize = length
+			characterSize = 1
+			colorless = character
+			for i = 2 to length
+				colorless = colorless + character
+		rightString = rightString.substring(0, 10) + colorless
+
+	/** Sets the character length */
+	function setLength(int length)
+		this.length = length
+		if characterSize == 2
+			lengthSize = length + length
+			colorless = "||"
+			for i = 2 to length
+				colorless = colorless + "||"
+		else
+			lengthSize = length
+			let character = colorless.substring(0, 1)
+			colorless = character
+			for i = 2 to length
+				colorless = colorless + character
+		rightString = rightString.substring(0, 10) + colorless
+
+	private function setCount(int left, int right, real size)
+		setText(colorless.substring( 0, left)
+		 + rightString.substring( 0, 10 + right), size)

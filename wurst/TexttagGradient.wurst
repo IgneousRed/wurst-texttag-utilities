@@ -1,0 +1,58 @@
+package TexttagGradient
+import NoWurst
+import TexttagCore
+import String
+
+/** TexttagGradient is an easy gradient text class extending **TexttagCore**
+	new TexttagGradient(orange, purple, direction, alpha)
+		..setGradientText("I Love Emilia!", size)
+		..setPos(pos)
+*/
+public class TexttagGradient extends TexttagCore
+	private colorHSV start
+	private colorHSV finish
+	private string finishColorString
+	private bool reverseDirection
+
+	construct(colorHSV start, colorHSV finish, bool colorWheelDirection, int alpha)
+		super(alpha)
+		setColorStart(start)
+		setColorFinish(finish)
+		setReverseDirection(colorWheelDirection)
+
+	/** Sets text */
+	function setGradientText(string text, real size)		//If overrinding "setText" it does not initialize in "TexttagUnilitiesText"
+		var result = text.substring(0, 1)
+		let length = text.length()
+		let stepS = (finish.s - start.s) / length
+		let stepV = (finish.v - start.v) / length
+		if reverseDirection
+			if start.h < finish.h
+				let startH = start.h + 1
+				let stepH = (finish.h - startH) / length
+				for i = 1 to length - 2
+					result += colorHSV((startH + stepH * i) % 1, start.s + stepS * i, start.v + stepV * i).toRGB().toColorString() + text.substring(i, i + 1)
+			else
+				let stepH = (finish.h - start.h + 1) / length
+				for i = 1 to length - 2
+					result += colorHSV((start.h + stepH * i) % 1, start.s + stepS * i, start.v + stepV * i).toRGB().toColorString() + text.substring(i, i + 1)
+		else
+			let stepH = (finish.h - start.h) / length
+			for i = 1 to length - 2
+				result += colorHSV(start.h + stepH * i, start.s + stepS * i, start.v + stepV * i).toRGB().toColorString() + text.substring(i, i + 1)
+		result += finishColorString + text.substring(length - 1, length)
+		setText(result, size)
+
+	/** Sets the beginning color */
+	function setColorStart(colorHSV start)
+		setColor(start.toRGB())
+		this.start = start
+
+	/** Sets the finishing color */
+	function setColorFinish(colorHSV finish)
+		finishColorString = finish.toRGB().toColorString()
+		this.finish = finish
+
+	/** Makes color lerp from the other side of the color wheel */
+	function setReverseDirection(boolean reverseDirection)
+		this.reverseDirection = reverseDirection

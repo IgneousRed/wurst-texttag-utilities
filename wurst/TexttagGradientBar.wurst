@@ -1,0 +1,73 @@
+package TexttagGradientBar
+import NoWurst
+import TexttagCore
+import String
+
+/** TexttagGradientBar is an easy and performant bar class extending **TexttagCore**
+	new TexttagGradientBar(char, len, red, aqua, false, gray, alpha)
+		..setCount(value, size)
+		..setPos(pos)
+*/
+public class TexttagGradientBar extends TexttagCore
+	private int length
+	private int colorSolidSize
+	private int characterSize
+	private int coloredCharacterSize
+	private string colorSolid
+	private string colorful
+
+	construct(string character, int length, colorHSV start, colorHSV finish, bool reverseDirection, color inactive, int alpha)
+		super(alpha)
+		setup(character, length, start, finish, reverseDirection, inactive)
+
+	/** Sets **value**(0-1) from the left side */
+	function setValue(real value, real size)
+		setCount((value * length).round(), size)
+
+	/** Activates **count** characters from the left side */
+	function setCount(int count, real size)
+		if count == 0
+			setText(colorSolid, size)
+		else if count == length
+			setText(colorful, size)
+		else
+			setText(colorful.substring(0, characterSize + (count - 1) * coloredCharacterSize)
+			 + colorSolid.substring(0, colorSolidSize - count * characterSize), size)
+
+	/** GradientBar setup. **reverseDirection** makes color lerp from the other side of the color wheel */
+	function setup(string character, int length, colorHSV start, colorHSV finish, bool reverseDirection, color inactive)
+		this.length = length
+		var characterFull = character
+		if character == "|"
+			characterFull = "||"
+			colorSolidSize = length + length + 10
+			characterSize = 2
+			colorSolid = inactive.toColorString() + characterFull
+			for i = 2 to length
+				colorSolid = colorSolid + characterFull
+		else
+			colorSolidSize = length + 10
+			characterSize = 1
+			colorSolid = inactive.toColorString() + characterFull
+			for i = 2 to length
+				colorSolid = colorSolid + characterFull
+		coloredCharacterSize = characterSize + 10
+		setColor(start.toRGB())
+		colorful = characterFull
+		let stepS = (finish.s - start.s) / length
+		let stepV = (finish.v - start.v) / length
+		if reverseDirection
+			if start.h < finish.h
+				let startH = start.h + 1
+				let stepH = (finish.h - startH) / length
+				for i = 1 to length - 2
+					colorful += colorHSV((startH + stepH * i) % 1, start.s + stepS * i, start.v + stepV * i).toRGB().toColorString() + characterFull
+			else
+				let stepH = (finish.h - start.h + 1) / length
+				for i = 1 to length - 2
+					colorful += colorHSV((start.h + stepH * i) % 1, start.s + stepS * i, start.v + stepV * i).toRGB().toColorString() + characterFull
+		else
+			let stepH = (finish.h - start.h) / length
+			for i = 1 to length - 2
+				colorful += colorHSV(start.h + stepH * i, start.s + stepS * i, start.v + stepV * i).toRGB().toColorString() + characterFull
+		colorful += finish.toRGB().toColorString() + characterFull

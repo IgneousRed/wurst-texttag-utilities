@@ -1,0 +1,66 @@
+package TexttagUtilitiesTest
+import ClosureForGroups
+import ClosureTimers
+import GameTimer
+import TexttagCore
+import TexttagGradient
+import TexttagBar
+import TexttagGradientBar
+
+init
+	forUnitsAll() u -> 
+		u.remove()
+	let u = CreateUnit(playerFromIndex(0), 'hmpr', 400, 350, 180)
+	u.issuePointOrder("Move", vec2(-600, 350))
+	localPlayer.select(u)
+
+	//Core
+	real fadeTime = 10
+	let c = new TexttagCore(255)
+		..setText("Magic", 20)
+		..setColor(color(255, 0, 255))
+		..fadeOut(fadeTime, vec2(0.01, 0.01))
+		..setVisibility(CreateForce()..addPlayer(localPlayer))
+		..lock(u, vec3(-200, -150, 100))
+
+	doPeriodicallyCounted(ANIMATION_PERIOD, (fadeTime / ANIMATION_PERIOD).toInt() - fadeTime.ceil()) (CallbackCounted cb) ->
+		c.setAlpha(((((currentTime % 2 - 1).abs() * 360).fromDeg().cos() / 2 + 0.5) * 255).toInt())
+
+	//Gradient
+	new TexttagGradient(colorHSV(0.25, 1, 1), colorHSV(0.75, 1, 1), false, 255)
+		..setGradientText("I Love Emilia!", 20)
+		..setPos(vec3(-450, 0, 100))
+	new TexttagGradient(colorHSV(0.25, 1, 1), colorHSV(0.75, 1, 1), true, 255)
+		..setGradientText("I Love Emilia!", 20)
+		..setPos(vec3(-450, -100, 100))
+	new TexttagGradient(colorHSV(0.75, 1, 1), colorHSV(0.25, 1, 1), false, 255)
+		..setGradientText("I Love Emilia!", 20)
+		..setPos(vec3(-450, -200, 100))
+	new TexttagGradient(colorHSV(0.75, 1, 1), colorHSV(0.25, 1, 1), true, 255)
+		..setGradientText("I Love Emilia!", 20)
+		..setPos(vec3(-450, -300, 100))
+
+	//Bar
+	new TexttagBar("o", 10, color(255, 255, 0), color(0, 255, 255), 255)
+		..setValueLeft(0.4, 20)
+		..setPos(vec3(-250, 100, 100))
+
+	//GradientBar
+	let char = "|"
+	let max = 10
+	let red = colorHSV(0, 1, 1)
+	let aqua = colorHSV(0.5, 1, 1)
+	let gray = color(127, 127, 127)
+	let value = 5
+	new TexttagGradientBar(char, max, red, aqua, false, gray, 255)
+		..setCount(value, 20)
+		..setPos(vec3(0, 0, 100))
+	new TexttagGradientBar(char, max, red, aqua, true, gray, 255)
+		..setCount(value, 20)
+		..setPos(vec3(0, -100, 100))
+	new TexttagGradientBar(char, max, aqua, red, false, gray, 255)
+		..setCount(value, 20)
+		..setPos(vec3(0, -200, 100))
+	new TexttagGradientBar(char, max, aqua, red, true, gray, 255)
+		..setCount(value, 20)
+		..setPos(vec3(0, -300, 100))
