@@ -2,6 +2,8 @@ package TexttagBar
 import NoWurst
 import TexttagCore
 import String
+import Colors
+import Real
 
 /** TexttagBar is an easy and performant bar class extending **TexttagCore**
 	new TexttagBar(char, len, yellow, aqua, alpha)

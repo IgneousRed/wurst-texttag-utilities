@@ -1,5 +1,5 @@
 package TexttagCore
-import public Texttag
+import Texttag
 import NoWurst
 import Unit
 import ErrorHandling
@@ -52,9 +52,11 @@ public class TexttagCore
 		if isLocked()
 			arrayRemove()
 
+	/** Sets texttag text */
 	function setText(string text, real size)
 		textTag.setText(text, size)
-	
+
+	/** Sets texttag color */
 	function setColor(color col)
 		textTag.setColor(col.withAlpha(0))
 
@@ -83,6 +85,7 @@ public class TexttagCore
 		else
 			error("Texttag is already fading")
 
+	/** Is text fading */
 	function isFading() returns bool
 		return fadeTime != -1
 
@@ -110,7 +113,7 @@ public class TexttagCore
 		else
 			error("Texttag is not locked")
 
-	/** returns true if text is locked to a unit */
+	/** Is text locked to a unit */
 	function isLocked() returns bool
 		return lockIndex > -1
 

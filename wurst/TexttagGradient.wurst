@@ -2,6 +2,7 @@ package TexttagGradient
 import NoWurst
 import TexttagCore
 import String
+import Colors
 
 /** TexttagGradient is an easy gradient text class extending **TexttagCore**
 	new TexttagGradient(orange, purple, direction, alpha)
@@ -20,8 +21,9 @@ public class TexttagGradient extends TexttagCore
 		setColorFinish(finish)
 		setReverseDirection(reverseDirection)
 
-	/** Sets text */
-	function setGradientText(string text, real size)		//If overrinding "setText" it does not initialize in "TexttagUnilitiesText"
+	/** Sets texttag text */
+	function setGradientText(string text, real size)
+	// override function setText(string text, real size) // Makes TexttagUtilitiesTest unable to initialize?
 		var result = text.substring(0, 1)
 		let length = text.length()
 		let stepS = (finish.s - start.s) / length

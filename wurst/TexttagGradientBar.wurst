@@ -2,6 +2,8 @@ package TexttagGradientBar
 import NoWurst
 import TexttagCore
 import String
+import Colors
+import Real
 
 /** TexttagGradientBar is an easy and performant bar class extending **TexttagCore**
 	new TexttagGradientBar(char, len, red, aqua, false, gray, alpha)
