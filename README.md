@@ -6,7 +6,7 @@ Usage example:
 
 ```
 let gradBar = new TexttagGradientBar(char, len, red, aqua, false, gray, alpha)
-	..setCount(value, 20)
+	..setCount(value, textSize)
 	..fadeOut(fadeTime, velocity)
 	..setVisibility(playerGroup)
 	..lock(u, offset)
